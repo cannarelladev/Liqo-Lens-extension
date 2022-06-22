@@ -1,0 +1,51 @@
+body {
+  color: white!important;
+}
+
+/** Components */
+.liqo-box {
+  background-color: var(--contentColor)!important;
+}
+
+/** Inputs */
+
+.liqo-input {
+  font-size: 14pt!important;
+  color: var(--textColorPrimary)!important;
+}
+
+.liqo-input-labels {
+  font-size: medium!important;
+  border-color: var(--textColorPrimary)!important;
+}
+
+/** Fonts */
+
+.liqo-primary {
+  color: var(--textColorPrimary)!important;
+}
+
+/* .success {
+  color: var(--colorSuccess);
+}
+
+.info {
+  color: var(--colorInfo);
+}
+
+.error {
+  color: var(--colorError);
+}
+
+.warning {
+  color: var(--colorWarning);
+}
+
+.contrast {
+  color: var(--textColorAccent);
+}
+
+.text-secondary {
+  color: var(--textColorSecondary);
+} */
+
