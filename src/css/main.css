@@ -14,12 +14,24 @@ body {
   color: var(--textColorPrimary)!important;
 }
 
+.liqo-input-code {
+  font-family: monospace!important;
+  font-size: 14pt!important;
+  color: var(--textColorPrimary)!important;
+}
+
 .liqo-input-labels {
   font-size: medium!important;
   border-color: var(--textColorPrimary)!important;
 }
 
 /** Fonts */
+
+.liqo-box-title {
+  font-weight: 600!important;
+  font-size: larger!important;
+  color: white!important;
+}
 
 .liqo-primary {
   color: var(--textColorPrimary)!important;

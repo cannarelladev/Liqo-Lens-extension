@@ -11,8 +11,10 @@ import {
   CardHeader,
   Button,
 } from "@material-ui/core";
+import { getPeeringParameters, peerWithCluster } from "../../api/api";
 import { Icon } from "@material-ui/core";
 import "../../css/main.css";
+import { ForeignCluster, foreignClusterStore } from "../../api/foreigncluster";
 
 export function PeeringIcon(props: Renderer.Component.IconProps) {
   return (
@@ -27,7 +29,38 @@ export function PeeringIcon(props: Renderer.Component.IconProps) {
 export const PeeringPage: React.FC<{ extension: Renderer.LensExtension }> = (
   props
 ) => {
-  const [command, setCommand] = React.useState("");
+  const [insertCommand, setInsertCommand] = React.useState("");
+  const [generateCommand, setGenerateCommand] = React.useState("");
+
+  const clear = () => {
+    setInsertCommand("");
+  }
+
+  const generate = async () => {
+    try {
+      const generatedCommand = await getPeeringParameters()
+      setGenerateCommand(JSON.stringify(generatedCommand, null, 2));
+    }
+    catch (e) {
+      console.log(e);
+    }
+  }
+
+  const peer = async () => {
+    try {
+      const peerCommand = JSON.parse(insertCommand);
+      await peerWithCluster(foreignClusterStore, peerCommand.clusterName, peerCommand.clusterID, peerCommand.authURL, peerCommand.token);
+    }
+    catch (e) {
+      console.log(e);
+    }
+  }
+
+  const preview =
+    "liqoctl peer out-of-band <CLUSTER NAME>\
+    \n\t--auth-url <URL:PORT>\
+    \n\t--cluster-id <CLUSTER UID>\
+    \n\t--auth-token <TOKEN>";
 
   return (
     <div className="flex gaps align-flex-start">
@@ -35,6 +68,9 @@ export const PeeringPage: React.FC<{ extension: Renderer.LensExtension }> = (
         <Grid item xs={6}>
           <Card className="liqo-box">
             <CardHeader
+              titleTypographyProps={{
+                className: "liqo-box-title",
+              }}
               className="liqo-primary"
               title="Insert Peering command"
             />
@@ -55,26 +91,31 @@ export const PeeringPage: React.FC<{ extension: Renderer.LensExtension }> = (
                     }}
                     variant="outlined"
                     className="liqo-primary"
-                    onChange={(e) => setCommand(e.target.value)}
+                    value={insertCommand}
+                    onChange={(e) => setInsertCommand(e.target.value)}
                   />
                 </Grid>
                 <Grid item xs={2}>
                   <Button
+                    disabled={insertCommand === ""}
                     variant="contained"
                     color="primary"
                     size="large"
                     fullWidth
                     endIcon={<Renderer.Component.Icon material="cable" />}
                     style={{ fontSize: "12pt", marginBottom: "2rem" }}
+                    onClick={peer}
                   >
                     PEER
                   </Button>
                   <Button
+                    disabled={insertCommand === ""}
                     variant="contained"
                     color="inherit"
                     size="large"
                     fullWidth
                     style={{ fontSize: "12pt" }}
+                    onClick={clear}
                   >
                     CLEAR
                   </Button>
@@ -86,11 +127,14 @@ export const PeeringPage: React.FC<{ extension: Renderer.LensExtension }> = (
         <Grid item xs={6}>
           <Card className="liqo-box">
             <CardHeader
+              titleTypographyProps={{
+                className: "liqo-box-title",
+              }}
               className="liqo-primary h1"
               title="Generate Peering command"
             />
             <CardContent>
-            <Grid container spacing={2}>
+              <Grid container spacing={2}>
                 <Grid item xs={9}>
                   <TextField
                     fullWidth
@@ -99,9 +143,9 @@ export const PeeringPage: React.FC<{ extension: Renderer.LensExtension }> = (
                     minRows={6}
                     disabled
                     //label="Command"
-                    defaultValue={"Prova"}
+                    defaultValue={preview}
                     InputProps={{
-                      className: "liqo-input",
+                      className: "liqo-input-code",
                     }}
                     InputLabelProps={{
                       className: "liqo-input-labels",
@@ -109,6 +153,7 @@ export const PeeringPage: React.FC<{ extension: Renderer.LensExtension }> = (
                     variant="outlined"
                     color="secondary"
                     className="liqo-primary"
+                    value={generateCommand}
                     //onChange={(e) => setCommand(e.target.value)}
                   />
                 </Grid>
@@ -120,15 +165,20 @@ export const PeeringPage: React.FC<{ extension: Renderer.LensExtension }> = (
                     fullWidth
                     endIcon={<Renderer.Component.Icon material="add_link" />}
                     style={{ fontSize: "12pt", marginBottom: "2rem" }}
+                    onClick={generate}
                   >
                     GENERATE
                   </Button>
                   <Button
+                    disabled={generateCommand === ""}
                     variant="contained"
                     color="inherit"
                     size="large"
                     fullWidth
                     style={{ fontSize: "12pt" }}
+                    onClick={() => {
+                      navigator.clipboard.writeText(generateCommand);
+                    }}
                   >
                     COPY
                   </Button>
@@ -154,40 +204,6 @@ export const PeeringPage: React.FC<{ extension: Renderer.LensExtension }> = (
           <Card className="liqo-box">
             <CardContent>
               <Renderer.Component.TabLayout>
-                {/* <Renderer.Component.KubeObjectListLayout
-                  className="Certicates"
-                  store={certificatesStore}
-                  sortingCallbacks={{
-                    [sortBy.name]: (certificate: Certificate) =>
-                      certificate.getName(),
-                    [sortBy.namespace]: (certificate: Certificate) =>
-                      certificate.metadata.namespace,
-                    [sortBy.issuer]: (certificate: Certificate) =>
-                      certificate.spec.issuerRef.name,
-                  }}
-                  searchFilters={[
-                    (certificate: Certificate) => certificate.getSearchFields(),
-                  ]}
-                  renderHeaderTitle="Certificates"
-                  renderTableHeader={[
-                    { title: "Name", className: "name", sortBy: sortBy.name },
-                    {
-                      title: "Namespace",
-                      className: "namespace",
-                      sortBy: sortBy.namespace,
-                    },
-                    {
-                      title: "Issuer",
-                      className: "issuer",
-                      sortBy: sortBy.namespace,
-                    },
-                  ]}
-                  renderTableContents={(certificate: Certificate) => [
-                    certificate.getName(),
-                    certificate.metadata.namespace,
-                    certificate.spec.issuerRef.name,
-                  ]}
-                /> */}
               </Renderer.Component.TabLayout>
             </CardContent>
           </Card>

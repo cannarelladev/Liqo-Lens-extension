@@ -5,8 +5,6 @@ import {
   DashboardIcon,
   ManagerPage,
   ManagerIcon,
-  BrokerPage,
-  BrokerIcon,
   NSOffloadingPage,
   NSOffloadingIcon,
   PeeringPage,
@@ -35,12 +33,6 @@ export default class LiqoExtension extends Renderer.LensExtension {
         Page: () => <PeeringPage extension={this} />,
       },
     },
-    {
-      id: "broker",
-      components: {
-        Page: () => <BrokerPage extension={this} />,
-      },
-    },
   ];
 
   clusterPageMenus = [
@@ -51,14 +43,6 @@ export default class LiqoExtension extends Renderer.LensExtension {
         Icon: DashboardIcon,
       },
     },
-    /* {
-      parentId: "dashboard",
-      target: { pageId: "manager" },
-      title: "Manager",
-      components: {
-        Icon: ManagerIcon,
-      },
-    }, */
     {
       parentId: "dashboard",
       target: { pageId: "nsoffloading" },
@@ -75,14 +59,6 @@ export default class LiqoExtension extends Renderer.LensExtension {
         Icon: PeeringIcon,
       },
     },
-    /* {
-      parentId: "dashboard",
-      target: { pageId: "broker" },
-      title: "Broker",
-      components: {
-        Icon: BrokerIcon,
-      },
-    }, */
   ];
 
   /* kubeObjectDetailItems = [
