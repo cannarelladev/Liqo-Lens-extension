@@ -5,7 +5,7 @@ export class NamespaceOffloading extends Renderer.K8sApi.KubeObject {
   static apiVersion = "offloading.liqo.io/v1alpha1";
   static plural = "namespaceoffloadings";
   static apiBase = `/apis/${this.apiVersion}/${this.plural}`;
-  static namespaced = true;
+  static namespaced = false;
 
   kind: string
   apiVersion: string

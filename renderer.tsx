@@ -12,8 +12,11 @@ import {
 } from "./src/components";
 import { ExamplePodDetails } from "./src/example-pod-details";
 import React from "react";
+import { AppPreferenceRegistration } from "@k8slens/extensions/dist/src/extensions/common-api/registrations";
+import { nsStore } from "./src/api/namespace/namespace_store";
 
 export default class LiqoExtension extends Renderer.LensExtension {
+
   clusterPages = [
     {
       id: "manager",
@@ -22,7 +25,7 @@ export default class LiqoExtension extends Renderer.LensExtension {
       },
     },
     {
-      id: "nsoffloading",
+      id: "offloading",
       components: {
         Page: () => <NSOffloadingPage extension={this} />,
       },
@@ -38,17 +41,9 @@ export default class LiqoExtension extends Renderer.LensExtension {
   clusterPageMenus = [
     {
       id: "dashboard",
-      title: "Liqo Dashboard",
+      title: "Liqo",
       components: {
         Icon: DashboardIcon,
-      },
-    },
-    {
-      parentId: "dashboard",
-      target: { pageId: "nsoffloading" },
-      title: "NSOffloading",
-      components: {
-        Icon: NSOffloadingIcon,
       },
     },
     {
@@ -57,6 +52,14 @@ export default class LiqoExtension extends Renderer.LensExtension {
       title: "Peering",
       components: {
         Icon: PeeringIcon,
+      },
+    },
+    {
+      parentId: "dashboard",
+      target: { pageId: "offloading" },
+      title: "Offloading",
+      components: {
+        Icon: NSOffloadingIcon,
       },
     },
   ];
