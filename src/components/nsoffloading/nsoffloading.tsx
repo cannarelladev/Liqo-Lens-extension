@@ -2,7 +2,7 @@ import { Renderer } from "@k8slens/extensions";
 import { Namespace } from "@k8slens/extensions/dist/src/common/k8s-api/endpoints";
 import { type } from "os";
 import path from "path";
-import React from "react";
+import React, { useState } from "react";
 import {
   NamespaceOffloading,
   NamespaceOffloadingStore,
@@ -17,6 +17,7 @@ import {
   CardHeader,
   Button,
 } from "@material-ui/core";
+import {NewNSO} from "./dialog/new_nso";
 
 const { KubeObjectStore } = Renderer.K8sApi;
 const { Table, TableCell, TableRow, TableHead } = Renderer.Component;
@@ -44,7 +45,7 @@ export function NSOffloadingIcon(props: Renderer.Component.IconProps) {
   return (
     <Renderer.Component.Icon
       {...props}
-      material="leak_add"
+      material="sync_alt"
       tooltip={path.basename(__filename)}
     />
   );
@@ -57,6 +58,7 @@ interface customNamespace extends Namespace {
 export const NSOffloadingPage: React.FC<{
   extension: Renderer.LensExtension;
 }> = (props) => {
+  const [showNewNSDialog, setShowNewNSDialog] = useState(false);
   //console.log("test", namespaceStore.contextNamespaces);
 
   //namespaceStore.patch()
@@ -103,7 +105,7 @@ export const NSOffloadingPage: React.FC<{
           <TableCell key={1}></TableCell>Prova
         </TableHead>
       </Table> */}
-      <Renderer.Component.KubeObjectListLayout
+      {/* <Renderer.Component.KubeObjectListLayout
         className="table-ns"
         store={namespaceStore}
         sortingCallbacks={{
@@ -127,7 +129,7 @@ export const NSOffloadingPage: React.FC<{
           ns.getStatus(),
           ns.getAge(true, true, false),
         ]}
-      />
+      /> */}
       <Renderer.Component.KubeObjectListLayout
         className="table-nsOff"
         store={nsOffloadingStore}
@@ -138,7 +140,7 @@ export const NSOffloadingPage: React.FC<{
             nsoffloading.metadata.namespace,
           [offloadingSortBy.offloadingPhase]: (
             nsoffloading: NamespaceOffloading
-          ) => nsoffloading.status.offloadingPhase,
+          ) => nsoffloading.status?.offloadingPhase ?? "Not Ready",
           [offloadingSortBy.podOffloadingStartegy]: (
             nsoffloading: NamespaceOffloading
           ) => nsoffloading.spec.podOffloadingStrategy,
@@ -146,7 +148,7 @@ export const NSOffloadingPage: React.FC<{
         searchFilters={[
           (nsoffloading: NamespaceOffloading) => nsoffloading.getSearchFields(),
         ]}
-        renderHeaderTitle="NamespaceOffloadings"
+        renderHeaderTitle="Namespace Offloadings"
         renderTableHeader={[
           {
             title: "Name",
@@ -172,10 +174,15 @@ export const NSOffloadingPage: React.FC<{
         renderTableContents={(nsoffloading: NamespaceOffloading) => [
           nsoffloading.getName(),
           nsoffloading.metadata.namespace,
-          nsoffloading.status.offloadingPhase,
+          nsoffloading.status?.offloadingPhase ?? "Not Ready",
           nsoffloading.spec.podOffloadingStrategy,
         ]}
+        addRemoveButtons={{
+          addTooltip: 'Add new NamespaceOffloading',
+          onAdd: () => setShowNewNSDialog(true),
+        }}
       />
+      <NewNSO isOpen={showNewNSDialog} setIsOpen={setShowNewNSDialog} ns={namespaceStore.getItems()} />
     </>
   );
 };
