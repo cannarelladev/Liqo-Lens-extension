@@ -38,7 +38,6 @@ function offloadNamespace(nsOffloadingStore: Renderer.K8sApi.KubeObjectStore<Nam
             ],
         },
     }
-    // todo: what is the difference between .create and .createItem?
     return nsOffloadingStore.create({name: "offloading", namespace: namespace}, { spec: offloadingSpec });
 }
 
@@ -60,24 +59,31 @@ function offloadNamespace(nsOffloadingStore: Renderer.K8sApi.KubeObjectStore<Nam
             ],
         },
     }
-    // todo: what is the difference between .create and .createItem?
     return nsOffloadingStore.create({name: "offloading", namespace: namespace}, { spec: offloadingSpec });
 } */
 
 /** Peers with the cluster with the given auth URL and token */
 export async function peerWithCluster(fcStore: Renderer.K8sApi.KubeObjectStore<ForeignCluster>, clusterName: string, clusterID: string, authUrl: string, token: string): Promise<ForeignCluster> {
-    await Renderer.K8sApi.secretsApi.create({name: "remote-token-" + clusterID, namespace: "liqo"}, {
-        metadata: {
-            labels: {
-            "discovery.liqo.io/cluster-id": clusterID,
-            }
-        },
-        spec: {
-            data: {
-            token: atob(token),
-            }
-        },
-    });
+    try {
+        await Renderer.K8sApi.secretsApi.create({name: "remote-token-" + clusterID, namespace: "liqo"}, {
+            metadata: {
+                labels: {
+                "discovery.liqo.io/cluster-id": clusterID,
+                }
+            },
+            spec: {
+                data: {
+                token: atob(token),
+                }
+            },
+        });
+    } catch (e) {
+        // The secret may already exist if we peered with this cluster in the past.
+        // If that is the issue, ignore it - otherwise, rethrow the exception
+        if (e?.error?.reason != "AlreadyExists")
+            throw e;
+        console.warn("Peering secret already exists:", e)
+    }
     const fcSpec: ForeignClusterSpec = {
         clusterIdentity: {
             clusterID: clusterID,
@@ -90,8 +96,18 @@ export async function peerWithCluster(fcStore: Renderer.K8sApi.KubeObjectStore<F
         networkingEnabled: "Yes",
     };
 
-    // todo: what is the difference between .create and .createItem?
-    return fcStore.create({name: clusterName}, { spec: fcSpec });
+    try {
+        return await fcStore.create({name: clusterName}, { spec: fcSpec });
+    } catch (e) {
+        // The FC may already exist if we peered with this cluster in the past.
+        // If that is the issue, return the existing cluster instead
+        if (e?.error?.reason == "AlreadyExists") {
+            console.warn("Foreign cluster already exists:", e)
+            return fcStore.getByName(clusterName);
+        } else {
+            throw e;
+        }
+    }
 }
 
 export async function getPeeringParameters() {
