@@ -91,7 +91,7 @@ export const NewNSO: FC<NewNSOProps> = (props) => {
     setIsOpen(false);
   };
 
-  const nsRegex = new RegExp("^liqo-tenant*|^local-path-storage$|^liqo$|^liqo-storage$|^default$|^kube-system$|^kube-public$|^kube-node-lease$");
+  const nsRegex = new RegExp("^liqo-tenant-.*$|^local-path-storage$|^liqo$|^liqo-storage$|^kube-system$|^kube-public$|^kube-node-lease$");
 
   const podStrategyOptions = [
     PO_STRATEGY.LOCAL,

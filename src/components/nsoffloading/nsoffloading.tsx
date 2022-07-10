@@ -17,7 +17,7 @@ import {
   CardHeader,
   Button,
 } from "@material-ui/core";
-import {NewNSO} from "./dialog/new_nso";
+import { NewNSO } from "./dialog/new_nso";
 
 const { KubeObjectStore } = Renderer.K8sApi;
 const { Table, TableCell, TableRow, TableHead } = Renderer.Component;
@@ -138,12 +138,12 @@ export const NSOffloadingPage: React.FC<{
             nsoffloading.getName(),
           [offloadingSortBy.namespace]: (nsoffloading: NamespaceOffloading) =>
             nsoffloading.metadata.namespace,
-          [offloadingSortBy.offloadingPhase]: (
-            nsoffloading: NamespaceOffloading
-          ) => nsoffloading.status?.offloadingPhase ?? "Not Ready",
           [offloadingSortBy.podOffloadingStartegy]: (
             nsoffloading: NamespaceOffloading
           ) => nsoffloading.spec.podOffloadingStrategy,
+          [offloadingSortBy.offloadingPhase]: (
+            nsoffloading: NamespaceOffloading
+          ) => nsoffloading.status?.offloadingPhase ?? "Not Ready",
         }}
         searchFilters={[
           (nsoffloading: NamespaceOffloading) => nsoffloading.getSearchFields(),
@@ -161,26 +161,31 @@ export const NSOffloadingPage: React.FC<{
             sortBy: offloadingSortBy.namespace,
           },
           {
-            title: "Offloading Phase",
-            className: "offloadingPhase",
-            sortBy: offloadingSortBy.offloadingPhase,
-          },
-          {
             title: "Pod Offloading Strategy",
             className: "podOffloadingStrategy",
             sortBy: offloadingSortBy.podOffloadingStartegy,
+          },
+          {
+            title: "Offloading Phase",
+            className: "offloadingPhase",
+            sortBy: offloadingSortBy.offloadingPhase,
           },
         ]}
         renderTableContents={(nsoffloading: NamespaceOffloading) => [
           nsoffloading.getName(),
           nsoffloading.metadata.namespace,
-          nsoffloading.status?.offloadingPhase ?? "Not Ready",
           nsoffloading.spec.podOffloadingStrategy,
+          nsoffloading.status?.offloadingPhase ?? "Not Ready",
         ]}
         addRemoveButtons={{
-          addTooltip: 'Add new NamespaceOffloading',
+          addTooltip: "Add new NamespaceOffloading",
           onAdd: () => setShowNewNSDialog(true),
         }}
+      />
+      <NewNSO
+        isOpen={showNewNSDialog}
+        setIsOpen={setShowNewNSDialog}
+        ns={namespaceStore.getItems()}
       />
       <NewNSO isOpen={showNewNSDialog} setIsOpen={setShowNewNSDialog} ns={namespaceStore.getItems()} />
     </>
