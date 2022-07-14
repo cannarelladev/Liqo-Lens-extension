@@ -108,6 +108,17 @@ export async function peerWithCluster(fcStore: Renderer.K8sApi.KubeObjectStore<F
     }
 }
 
+/** Enables or disables incoming peering with the given cluster */
+export async function toggleIncomingPeering(fcStore: Renderer.K8sApi.KubeObjectStore<ForeignCluster>, clusterID: string, enabled: boolean): Promise<ForeignCluster> {
+    const fc = fcStore.getItems().find(fc => fc.spec.clusterIdentity.clusterID === clusterID);
+    if (!fc)
+        throw new Error("No cluster found");
+    const patch = {incomingPeeringEnabled: enabled ? "Yes" : "No"};
+    const newSpec: ForeignClusterSpec = Object.assign(fc.spec, patch);
+    const newFc: ForeignCluster = Object.assign(fc, {spec: newSpec});
+    return fcStore.update(fc, newFc);    
+}
+
 export async function getPeeringParameters() {
     const tokenSecret = await Renderer.K8sApi.secretsApi.get({name: "auth-token", namespace: "liqo"});
     if (!tokenSecret) { throw new Error("No auth token secret found"); }
