@@ -82,31 +82,29 @@ export async function peerWithCluster(fcStore: Renderer.K8sApi.KubeObjectStore<F
         // If that is the issue, ignore it - otherwise, rethrow the exception
         if (e?.error?.reason != "AlreadyExists")
             throw e;
-        console.warn("Peering secret already exists:", e)
+        console.warn("Peering secret already exists:", e);
     }
-    const fcSpec: ForeignClusterSpec = {
-        clusterIdentity: {
-            clusterID: clusterID,
-            clusterName: clusterName,
-        },
-        foreignAuthUrl: authUrl,
-        outgoingPeeringEnabled: "Yes",
-        incomingPeeringEnabled: "Auto",
-        insecureSkipTLSVerify: true,
-        networkingEnabled: "Yes",
-    };
 
-    try {
+    const fc = fcStore.getItems().find(fc => fc.spec.clusterIdentity.clusterID === clusterID);
+    if (fc !== undefined) {
+        console.warn("Foreign cluster already exists:", fc);
+        const patch = {outgoingPeeringEnabled: "Yes"};
+        const newSpec: ForeignClusterSpec = Object.assign(fc.spec, patch);
+        const newFc: ForeignCluster = Object.assign(fc, {spec: newSpec});
+        return fcStore.update(fc, newFc);
+    } else {
+        const fcSpec: ForeignClusterSpec = {
+            clusterIdentity: {
+                clusterID: clusterID,
+                clusterName: clusterName,
+            },
+            foreignAuthUrl: authUrl,
+            outgoingPeeringEnabled: "Yes",
+            incomingPeeringEnabled: "Auto",
+            insecureSkipTLSVerify: true,
+            networkingEnabled: "Yes",
+        };
         return await fcStore.create({name: clusterName}, { spec: fcSpec });
-    } catch (e) {
-        // The FC may already exist if we peered with this cluster in the past.
-        // If that is the issue, return the existing cluster instead
-        if (e?.error?.reason == "AlreadyExists") {
-            console.warn("Foreign cluster already exists:", e)
-            return fcStore.getByName(clusterName);
-        } else {
-            throw e;
-        }
     }
 }
 
