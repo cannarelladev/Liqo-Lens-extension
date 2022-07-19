@@ -15,7 +15,11 @@ import {
   Container,
   Typography,
 } from "@material-ui/core";
-import { getPeeringParameters, peerWithCluster } from "../../api/api";
+import {
+  getPeeringParameters,
+  peerWithCluster,
+  toggleIncomingPeering,
+} from "../../api/api";
 import { Icon as IconMUI } from "@material-ui/core";
 import "../../css/main.css";
 import { ForeignCluster, foreignClusterStore } from "../../api/foreigncluster";
@@ -50,11 +54,6 @@ export const PeeringPage: React.FC<{ extension: Renderer.LensExtension }> = (
     setInsertCommand("");
   };
 
-  const clearGenerate = () => {
-    setGenerateCommand("");
-    setGenerateCommandLIQOCTL("");
-  };
-
   const copy = async () => {
     return await navigator.clipboard.writeText(generateCommand);
   };
@@ -83,6 +82,15 @@ export const PeeringPage: React.FC<{ extension: Renderer.LensExtension }> = (
     } catch (e) {
       console.log(e);
     }
+  };
+
+  const closeGenerate = () => {
+    setShowGenerateCommandDialog(false);
+  };
+
+  const closeInsert = () => {
+    clearInsert();
+    setShowInsertCommandDialog(false);
   };
 
   const preview =
@@ -124,12 +132,16 @@ export const PeeringPage: React.FC<{ extension: Renderer.LensExtension }> = (
     generate();
   }, []); */
 
+  const enabledIncoming = (fc: ForeignCluster) => {
+    return getIncomingValue(fc) === "Established";
+  };
+
   return (
     <>
       <Dialog
         isOpen={showGenerateCommandDialog}
         onOpen={generate}
-        close={() => setShowGenerateCommandDialog(false)}
+        close={closeGenerate}
       >
         <Grid container spacing={2} className="liqo-generate-dialog">
           <Grid item xs={12}>
@@ -178,11 +190,7 @@ export const PeeringPage: React.FC<{ extension: Renderer.LensExtension }> = (
           </Grid>
         </Grid>
       </Dialog>
-      <Dialog
-        isOpen={showInsertCommandDialog}
-        onOpen={generate}
-        close={() => setShowInsertCommandDialog(false)}
-      >
+      <Dialog isOpen={showInsertCommandDialog} close={closeInsert}>
         <Grid container spacing={2} className="liqo-generate-dialog">
           <Grid item xs={12}>
             <TextField
@@ -190,6 +198,7 @@ export const PeeringPage: React.FC<{ extension: Renderer.LensExtension }> = (
               focused
               multiline
               minRows={10}
+              placeholder="Paste here the generated JSON Command by another cluster"
               label="Command"
               InputProps={{
                 className: "liqo-input-code",
@@ -461,10 +470,10 @@ export const PeeringPage: React.FC<{ extension: Renderer.LensExtension }> = (
             sortingCallbacks={{
               [fcSortBy.clusterName]: (fc: ForeignCluster) =>
                 fc.spec.clusterIdentity.clusterName,
-              [fcSortBy.incomingPeering]: (fc: ForeignCluster) =>
-                getIncomingValue(fc),
               [fcSortBy.outcomingPeering]: (fc: ForeignCluster) =>
                 getOutcomingValue(fc),
+              [fcSortBy.incomingPeering]: (fc: ForeignCluster) =>
+                getIncomingValue(fc),
               [fcSortBy.networking]: (fc: ForeignCluster) =>
                 getNetworkingValue(fc),
               [fcSortBy.authentication]: (fc: ForeignCluster) =>
@@ -479,14 +488,14 @@ export const PeeringPage: React.FC<{ extension: Renderer.LensExtension }> = (
                 sortBy: fcSortBy.clusterName,
               },
               {
-                title: "Incoming Peering",
-                className: "incomingPeeringEnabled",
-                sortBy: fcSortBy.incomingPeering,
-              },
-              {
                 title: "Outgoing Peering",
                 className: "outgoingPeeringEnabled",
                 sortBy: fcSortBy.outcomingPeering,
+              },
+              {
+                title: "Incoming Peering",
+                className: "incomingPeeringEnabled",
+                sortBy: fcSortBy.incomingPeering,
               },
               {
                 title: "Networking",
@@ -498,13 +507,39 @@ export const PeeringPage: React.FC<{ extension: Renderer.LensExtension }> = (
                 className: "insecureSkipTLSVerify",
                 sortBy: fcSortBy.authentication,
               },
+              {
+                title: "",
+              },
             ]}
             renderTableContents={(fc: ForeignCluster) => [
               fc.spec.clusterIdentity.clusterName,
-              getIncomingValue(fc),
               getOutcomingValue(fc),
+              getIncomingValue(fc),
               getNetworkingValue(fc),
               getAuthenticationValue(fc),
+              <div
+                style={{
+                  fontWeight: "bold",
+                  backgroundColor: "#f50057",
+                  width: "150px",
+                  textAlign: "center",
+                  paddingTop: "0.1rem",
+                  paddingBottom: "0.1rem",
+                  borderRadius: "0.5rem",
+                }}
+                onClick={(event) => {
+                  event.stopPropagation();
+                  toggleIncomingPeering(
+                    foreignClusterStore,
+                    fc.spec.clusterIdentity.clusterID,
+                    !enabledIncoming(fc)
+                  );
+                }}
+              >
+                {enabledIncoming(fc)
+                  ? "Disable Incoming".toUpperCase()
+                  : "Enable Incoming".toUpperCase()}
+              </div>,
             ]}
           />
         </Grid>

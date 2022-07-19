@@ -86,7 +86,7 @@ export async function peerWithCluster(fcStore: Renderer.K8sApi.KubeObjectStore<F
     }
 
     const fc = fcStore.getItems().find(fc => fc.spec.clusterIdentity.clusterID === clusterID);
-    if (fc !== undefined) {
+    if (fc) {
         console.warn("Foreign cluster already exists:", fc);
         const patch = {outgoingPeeringEnabled: "Yes"};
         const newSpec: ForeignClusterSpec = Object.assign(fc.spec, patch);
