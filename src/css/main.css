@@ -107,6 +107,18 @@ body {
   color: var(--textColorPrimary)!important;
 }
 
+/** Buttons */
+
+.peering-button {
+  font-weight: "bold";
+  background-color: "#f50057";
+  width: "150px";
+  text-align: "center";
+  padding-top: "0.1rem";
+  padding-bottom: "0.1rem";
+  border-radius: "0.5rem";
+}
+
 /* .success {
   color: var(--colorSuccess);
 }
