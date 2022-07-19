@@ -108,12 +108,12 @@ export async function peerWithCluster(fcStore: Renderer.K8sApi.KubeObjectStore<F
     }
 }
 
-/** Enables or disables incoming peering with the given cluster */
-export async function toggleIncomingPeering(fcStore: Renderer.K8sApi.KubeObjectStore<ForeignCluster>, clusterID: string, enabled: boolean): Promise<ForeignCluster> {
+/** Enables or disables outgoing peering with the given cluster */
+export async function toggleOutgoingPeering(fcStore: Renderer.K8sApi.KubeObjectStore<ForeignCluster>, clusterID: string, enabled: boolean): Promise<ForeignCluster> {
     const fc = fcStore.getItems().find(fc => fc.spec.clusterIdentity.clusterID === clusterID);
     if (!fc)
         throw new Error("No cluster found");
-    const patch = {incomingPeeringEnabled: enabled ? "Yes" : "No"};
+    const patch = {outgoingPeeringEnabled: enabled ? "Yes" : "No"};
     const newSpec: ForeignClusterSpec = Object.assign(fc.spec, patch);
     const newFc: ForeignCluster = Object.assign(fc, {spec: newSpec});
     return fcStore.update(fc, newFc);    

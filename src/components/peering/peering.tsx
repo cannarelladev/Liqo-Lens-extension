@@ -18,7 +18,7 @@ import {
 import {
   getPeeringParameters,
   peerWithCluster,
-  toggleIncomingPeering,
+  toggleOutgoingPeering,
 } from "../../api/api";
 import { Icon as IconMUI } from "@material-ui/core";
 import "../../css/main.css";
@@ -132,8 +132,8 @@ export const PeeringPage: React.FC<{ extension: Renderer.LensExtension }> = (
     generate();
   }, []); */
 
-  const enabledIncoming = (fc: ForeignCluster) => {
-    return getIncomingValue(fc) === "Established";
+  const enabledOutgoing = (fc: ForeignCluster) => {
+    return getOutcomingValue(fc) === "Established";
   };
 
   return (
@@ -529,16 +529,16 @@ export const PeeringPage: React.FC<{ extension: Renderer.LensExtension }> = (
                 }}
                 onClick={(event) => {
                   event.stopPropagation();
-                  toggleIncomingPeering(
+                  toggleOutgoingPeering(
                     foreignClusterStore,
                     fc.spec.clusterIdentity.clusterID,
-                    !enabledIncoming(fc)
+                    !enabledOutgoing(fc)
                   );
                 }}
               >
-                {enabledIncoming(fc)
-                  ? "Disable Incoming".toUpperCase()
-                  : "Enable Incoming".toUpperCase()}
+                {enabledOutgoing(fc)
+                  ? "Disable Outgoing".toUpperCase()
+                  : "Enable Outgoing".toUpperCase()}
               </div>,
             ]}
           />
