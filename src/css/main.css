@@ -95,6 +95,98 @@ body {
   border-color: var(--textColorPrimary)!important;
   color: #ffba44!important;
 }
+
+.liqo-checkbox-label {
+  font-size: medium!important;  
+  color: rgba(0, 0, 0, 0.87)  ;
+}
+
+.liqo-checkbox {
+  margin-left: 2rem!important;
+  transform: scale(1.5);
+}
+
+.liqo-radio {
+  font-size: medium!important;  
+  color: rgba(0, 0, 0, 0.87);
+/*   margin-left: 4rem!important;
+ */  transform: scale(1.5);
+}
+
+.liqo-radio-formgroup {
+  padding: 1rem 1rem 0.5rem!important;
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: space-around;
+  width: 100%!important;
+}
+
+.liqo-form-label {
+  font-size: large!important;
+}
+
+.liqo-formgroup {
+  padding: 1.5rem 1rem 0.5rem!important;
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: center;
+  width: 100%!important;
+}
+
+.liqo-select {
+  font-size: medium!important;
+  padding: 1.5rem 1rem 1rem!important;
+}
+
+.liqo-select-icon {
+  margin-top: 0.5rem!important;
+  transform: scale(2);
+}
+
+.liqo-select-group {
+  padding: 0.5rem!important;
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: center;
+}
+
+.liqo-create-group {
+  margin-top: -0.05rem!important;
+  width: 100%!important;
+  padding: 0.5rem!important;
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.liqo-create {
+  font-size: medium!important;
+  padding: 1.5rem 1rem 1rem!important;
+}
+
+.liqo-create-input {
+  padding: 0!important;
+}
+
+.liqo-nodes-group {
+  padding: 1.5rem 1rem 0.5rem!important;
+  display: flex;
+  flex-wrap: wrap;
+  width: 100%!important;
+}
+
+.liqo-nodes-group>* {
+  flex: 1 1 49%;
+}
+
+.liqo-nodes-checkbox {
+  transform: scale(1.5);
+}
+
 /** Fonts */
 
 .liqo-box-title {
@@ -107,16 +199,39 @@ body {
   color: var(--textColorPrimary)!important;
 }
 
+.liqo-required {
+  color: #f50057!important;
+  font-weight: 400!important;
+  vertical-align: text-bottom!important;
+  font-size: x-small!important;
+}
+
 /** Buttons */
 
 .peering-button {
-  font-weight: "bold";
-  background-color: "#f50057";
-  width: "150px";
-  text-align: "center";
-  padding-top: "0.1rem";
-  padding-bottom: "0.1rem";
-  border-radius: "0.5rem";
+  font-weight: "bold"!important;
+  width: "150px"!important;
+  text-align: "center"!important;
+  padding-top: "0.1rem"!important;
+  padding-bottom: "0.1rem"!important;
+  border-radius: "0.5rem"!important;
+}
+
+.peering-button.success {
+  background-color: var(--colorSuccess);
+  color: white;
+}
+
+.peering-button.error {
+  background-color: var(--colorError);
+  color: white;
+}
+
+.disabled-button {
+  background-color: var(--boxShadow);
+  color: white;
+/*   pointer-events: none;
+ */  cursor: not-allowed;
 }
 
 /* .success {

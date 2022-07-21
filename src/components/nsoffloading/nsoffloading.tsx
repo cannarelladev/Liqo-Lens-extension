@@ -134,8 +134,6 @@ export const NSOffloadingPage: React.FC<{
         className="table-nsOff"
         store={nsOffloadingStore}
         sortingCallbacks={{
-          [offloadingSortBy.name]: (nsoffloading: NamespaceOffloading) =>
-            nsoffloading.getName(),
           [offloadingSortBy.namespace]: (nsoffloading: NamespaceOffloading) =>
             nsoffloading.metadata.namespace,
           [offloadingSortBy.podOffloadingStartegy]: (
@@ -150,11 +148,6 @@ export const NSOffloadingPage: React.FC<{
         ]}
         renderHeaderTitle="Namespace Offloadings"
         renderTableHeader={[
-          {
-            title: "Name",
-            className: "name",
-            sortBy: offloadingSortBy.name,
-          },
           {
             title: "Namespace",
             className: "namespace",
@@ -172,7 +165,6 @@ export const NSOffloadingPage: React.FC<{
           },
         ]}
         renderTableContents={(nsoffloading: NamespaceOffloading) => [
-          nsoffloading.getName(),
           nsoffloading.metadata.namespace,
           nsoffloading.spec.podOffloadingStrategy,
           nsoffloading.status?.offloadingPhase ?? "Not Ready",
@@ -182,12 +174,7 @@ export const NSOffloadingPage: React.FC<{
           onAdd: () => setShowNewNSDialog(true),
         }}
       />
-      <NewNSO
-        isOpen={showNewNSDialog}
-        setIsOpen={setShowNewNSDialog}
-        ns={namespaceStore.getItems()}
-      />
-      <NewNSO isOpen={showNewNSDialog} setIsOpen={setShowNewNSDialog} ns={namespaceStore.getItems()} />
+      <NewNSO isOpen={showNewNSDialog} setIsOpen={setShowNewNSDialog} />
     </>
   );
 };

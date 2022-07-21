@@ -136,6 +136,13 @@ export const PeeringPage: React.FC<{ extension: Renderer.LensExtension }> = (
     return getOutcomingValue(fc) === "Established";
   };
 
+  const enabledButton = (fc: ForeignCluster) => {
+    return (
+      getOutcomingValue(fc) === "None" ||
+      getOutcomingValue(fc) === "Established"
+    );
+  };
+
   return (
     <>
       <Dialog
@@ -518,9 +525,11 @@ export const PeeringPage: React.FC<{ extension: Renderer.LensExtension }> = (
               getNetworkingValue(fc),
               getAuthenticationValue(fc),
               <div
+                className={`peering-button ${
+                  !enabledButton(fc) ? "disabled-button" : enabledOutgoing(fc) ? "error" : "success"
+                }`}
                 style={{
                   fontWeight: "bold",
-                  backgroundColor: "#f50057",
                   width: "150px",
                   textAlign: "center",
                   paddingTop: "0.1rem",
@@ -536,7 +545,7 @@ export const PeeringPage: React.FC<{ extension: Renderer.LensExtension }> = (
                   );
                 }}
               >
-                {enabledOutgoing(fc)
+                {!enabledButton(fc) ? "loading".toUpperCase() : enabledOutgoing(fc)
                   ? "Disable Outgoing".toUpperCase()
                   : "Enable Outgoing".toUpperCase()}
               </div>,
