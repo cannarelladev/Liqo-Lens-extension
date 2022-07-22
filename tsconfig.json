@@ -13,14 +13,9 @@
     "esModuleInterop": true,
     "allowSyntheticDefaultImports": true,
     "experimentalDecorators": true,
-    "jsx": "react"
+    "jsx": "react",
+    "plugins": [{ "name": "typescript-plugin-css-modules" }]
   },
-  "include": [
-    "./*.ts",
-    "./*.tsx"
-  ],
-  "exclude": [
-    "node_modules",
-    "*.js"
-  ]
+  "include": ["./*.ts", "./*.tsx"],
+  "exclude": ["node_modules", "*.js"]
 }

@@ -1,6 +1,6 @@
-import { NamespaceOffloading, NamespaceOffloadingSpec } from "./nsoffloading";
-import { ForeignCluster, ForeignClusterSpec } from "./foreigncluster";
 import { Renderer } from "@k8slens/extensions";
+import { ForeignCluster, ForeignClusterSpec } from "./foreigncluster";
+import { NamespaceOffloading, NamespaceOffloadingSpec } from "./nsoffloading";
 
 // Refer to https://api-docs.k8slens.dev/master/extensions/api/classes/Renderer.K8sApi.KubeObjectStore/ for the Kubernetes object store API
 
@@ -27,13 +27,24 @@ export const offloadNamespace = async (
   podOffloadingStartegy: string,
   namespaceMappingStrategy: string
 ): Promise<NamespaceOffloading> => {
-  const matchExpressions = [
-    {
-      key: "kubernetes.io/hostname",
-      operator: "In",
-      values: nodes,
-    },
-  ];
+  let nodeSelectors = [] as {
+    matchExpressions: {
+      key: string;
+      operator: string;
+      values: string[];
+    }[];
+  }[];
+  if (nodes.length > 0) {
+    const matchExpressions = [
+      {
+        key: "kubernetes.io/hostname",
+        operator: "In",
+        values: nodes,
+      },
+    ];
+    nodeSelectors = [{ matchExpressions }];
+  }
+
   /* if (clusters.length != 0)
         matchExpressions.push({ key: "liqo.io/remote-cluster-id", operator: "In", values: clusters }); */
 
@@ -41,11 +52,7 @@ export const offloadNamespace = async (
     namespaceMappingStrategy: namespaceMappingStrategy,
     podOffloadingStrategy: podOffloadingStartegy,
     clusterSelector: {
-      nodeSelectorTerms: [
-        {
-          matchExpressions: matchExpressions,
-        },
-      ],
+      nodeSelectorTerms: nodeSelectors,
     },
   };
   return nsOffloadingStore.create(
@@ -142,6 +149,22 @@ export async function toggleOutgoingPeering(
     .find((fc) => fc.spec.clusterIdentity.clusterID === clusterID);
   if (!fc) throw new Error("No cluster found");
   const patch = { outgoingPeeringEnabled: enabled ? "Yes" : "No" };
+  const newSpec: ForeignClusterSpec = Object.assign(fc.spec, patch);
+  const newFc: ForeignCluster = Object.assign(fc, { spec: newSpec });
+  return fcStore.update(fc, newFc);
+}
+
+/** Enables or disables incoming peering with the given cluster */
+export async function toggleIncomingPeering(
+  fcStore: Renderer.K8sApi.KubeObjectStore<ForeignCluster>,
+  clusterID: string,
+  enabled: boolean
+): Promise<ForeignCluster> {
+  const fc = fcStore
+    .getItems()
+    .find((fc) => fc.spec.clusterIdentity.clusterID === clusterID);
+  if (!fc) throw new Error("No cluster found");
+  const patch = { incomingPeeringEnabled: enabled ? "Yes" : "No" };
   const newSpec: ForeignClusterSpec = Object.assign(fc.spec, patch);
   const newFc: ForeignCluster = Object.assign(fc, { spec: newSpec });
   return fcStore.update(fc, newFc);

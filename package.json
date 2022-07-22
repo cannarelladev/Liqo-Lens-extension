@@ -17,8 +17,8 @@
   "engines": {
     "lens": "^5.0.0"
   },
-  "main": "./dist/main.js",
-  "renderer": "./dist/renderer.js",
+  "main": "dist/main.js",
+  "renderer": "dist/renderer.js",
   "scripts": {
     "start": "webpack --watch",
     "build": "npm run clean && webpack",
@@ -39,7 +39,7 @@
     "@types/webpack": "^4.41.17",
     "css-loader": "^5.0.1",
     "mobx": "^5.15.5",
-    "react": "^17.0.0",
+    "react": "^16.13.1",
     "react-open-doodles": "^1.0.5",
     "sass": "^1.29.0",
     "sass-loader": "^10.1.0",

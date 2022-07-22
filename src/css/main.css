@@ -1,7 +1,3 @@
-body {
-  color: white!important;
-}
-
 /** Components */
 .liqo-box {
   background-color: var(--contentColor)!important;
@@ -67,6 +63,10 @@ body {
   opacity: 1!important;
 }
 
+.liqo-nso-dialog {
+  height: 700px!important;
+}
+
 /** Inputs */
 
 .liqo-input {
@@ -98,7 +98,7 @@ body {
 
 .liqo-checkbox-label {
   font-size: medium!important;  
-  color: rgba(0, 0, 0, 0.87)  ;
+  color: rgba(0, 0, 0, 0.87);
 }
 
 .liqo-checkbox {
@@ -127,7 +127,7 @@ body {
 }
 
 .liqo-formgroup {
-  padding: 1.5rem 1rem 0.5rem!important;
+  padding: 1rem 1rem 0rem!important;
   display: flex;
   flex-direction: row;
   align-items: center;
@@ -179,8 +179,16 @@ body {
   width: 100%!important;
 }
 
+.liqo-nsmapping-group {
+  padding: 1rem 0.5rem 0.5rem!important;
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: center;
+}
+
 .liqo-nodes-group>* {
-  flex: 1 1 49%;
+  flex: 1 1 45%;
 }
 
 .liqo-nodes-checkbox {
@@ -204,6 +212,14 @@ body {
   font-weight: 400!important;
   vertical-align: text-bottom!important;
   font-size: x-small!important;
+}
+
+.liqo-description {
+  padding-top: 0.5rem!important;
+  color: rgba(0, 0, 0, 0.60) !important;
+  font-weight: 400!important;
+  vertical-align: text-bottom!important;
+  font-size: small!important;
 }
 
 /** Buttons */

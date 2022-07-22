@@ -1,8 +1,7 @@
 import { Renderer } from "@k8slens/extensions";
-import React, { Dispatch, SetStateAction } from "react";
-import { FC } from "react";
 import { Grid, TextField } from "@material-ui/core";
-import { getPeeringParameters, peerWithCluster } from "../../../api/api";
+import React, { Dispatch, FC, SetStateAction } from "react";
+import { getPeeringParameters } from "../../../api/api";
 
 const { Dialog } = Renderer.Component;
 

@@ -11,12 +11,3 @@ export function DashboardIcon(props: Renderer.Component.IconProps) {
     />
   );
 }
-
-export const DashboardPage: React.FC<{ extension: Renderer.LensExtension }> = (
-  props
-) => {
-  return (
-    <>
-    </>
-  );
-};

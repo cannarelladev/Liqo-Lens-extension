@@ -1,28 +1,15 @@
 import { Renderer } from "@k8slens/extensions";
-import { Input } from "@k8slens/extensions/dist/src/renderer/components/input";
+import { Button, Grid, TextField, Typography } from "@material-ui/core";
 import path from "path";
-import React, { useEffect, useState } from "react";
-import {
-  Card,
-  CardContent,
-  Grid,
-  TextareaAutosize,
-  TextField,
-  CardHeader,
-  Button,
-  AppBar,
-  Toolbar,
-  Container,
-  Typography,
-} from "@material-ui/core";
+import React, { useState } from "react";
 import {
   getPeeringParameters,
   peerWithCluster,
+  toggleIncomingPeering,
   toggleOutgoingPeering,
 } from "../../api/api";
-import { Icon as IconMUI } from "@material-ui/core";
-import "../../css/main.css";
 import { ForeignCluster, foreignClusterStore } from "../../api/foreigncluster";
+import "../../css/main.css";
 
 const { Dialog, Icon } = Renderer.Component;
 
@@ -136,10 +123,20 @@ export const PeeringPage: React.FC<{ extension: Renderer.LensExtension }> = (
     return getOutcomingValue(fc) === "Established";
   };
 
-  const enabledButton = (fc: ForeignCluster) => {
+  const enabledIncoming = (fc: ForeignCluster) => {
+    return getIncomingValue(fc) === "Established";
+  };
+
+  const enabledButtonOut = (fc: ForeignCluster) => {
     return (
       getOutcomingValue(fc) === "None" ||
       getOutcomingValue(fc) === "Established"
+    );
+  };
+
+  const enabledButtonIn = (fc: ForeignCluster) => {
+    return (
+      getIncomingValue(fc) === "None" || getIncomingValue(fc) === "Established"
     );
   };
 
@@ -311,163 +308,6 @@ export const PeeringPage: React.FC<{ extension: Renderer.LensExtension }> = (
             </div>
           </div>
         </div>
-        {/*                 <Grid item xs={3}>
-                  <Button
-                    variant="contained"
-                    color="secondary"
-                    size="large"
-                    fullWidth
-                    endIcon={<Renderer.Component.Icon material="add_link" />}
-                    style={{ fontSize: "12pt", marginBottom: "2rem" }}
-                    onClick={generate}
-                  >
-                    GENERATE
-                  </Button>
-                  <Button
-                    disabled={generateCommand === ""}
-                    variant="contained"
-                    color="inherit"
-                    size="large"
-                    fullWidth
-                    style={{ fontSize: "12pt", marginBottom: "2rem" }}
-                    onClick={copy}
-                  >
-                    COPY
-                  </Button>
-                  <Button
-                    disabled={generateCommand === ""}
-                    variant="contained"
-                    color="inherit"
-                    size="large"
-                    fullWidth
-                    style={{ fontSize: "12pt" }}
-                    onClick={clearGenerate}
-                  >
-                    CLEAR
-                  </Button>
-                </Grid> */}
-        {/* <AdbIcon sx={{ display: { xs: "none", md: "flex" }, mr: 1 }} /> */}
-
-        {/* <div className="col-6" style={{ paddingRight: "0.5rem" }}>
-          <Card className="liqo-box">
-            <CardHeader
-              titleTypographyProps={{
-                className: "liqo-box-title",
-              }}
-              className="liqo-primary h1"
-              title="Generate Peering command"
-            />
-            <CardContent>
-              <Grid container spacing={2}>
-                <Grid item xs={12}>
-                  <TextField
-                    style={{ paddingBottom: "2rem" }}
-                    fullWidth
-                    //focused
-                    multiline
-                    minRows={8}
-                    disabled
-                    label="JSON Command"
-                    defaultValue={preview}
-                    InputProps={{
-                      className: "liqo-input-code",
-                    }}
-                    InputLabelProps={{
-                      className: "liqo-output-labels",
-                    }}
-                    variant="outlined"
-                    color="secondary"
-                    className="liqo-primary"
-                    value={generateCommand}
-                    //onChange={(e) => setCommand(e.target.value)}
-                  />
-                  <TextField
-                    fullWidth
-                    //focused
-                    multiline
-                    minRows={6}
-                    disabled
-                    label="LIQOCTL Command"
-                    defaultValue={preview}
-                    InputProps={{
-                      className: "liqo-input-code",
-                    }}
-                    InputLabelProps={{
-                      className: "liqo-output-labels2",
-                    }}
-                    variant="outlined"
-                    color="secondary"
-                    className="liqo-primary"
-                    value={generateCommandLIQOCTL}
-                    //onChange={(e) => setCommand(e.target.value)}
-                  />
-                </Grid>
-                
-              </Grid>
-            </CardContent>
-          </Card>
-        </div>
-        <div className="col-6" style={{ paddingLeft: "0.5rem" }}>
-          <Card className="liqo-box" style={{ height: "100%" }}>
-            <CardHeader
-              titleTypographyProps={{
-                className: "liqo-box-title",
-              }}
-              className="liqo-primary"
-              title="Insert Peering command (JSON)"
-            />
-            <CardContent>
-              <Grid container spacing={2}>
-                <Grid item xs={12}>
-                  <TextField
-                    fullWidth
-                    focused
-                    multiline
-                    minRows={10}
-                    label="Command"
-                    InputProps={{
-                      className: "liqo-input",
-                    }}
-                    InputLabelProps={{
-                      className: "liqo-input-labels",
-                    }}
-                    variant="outlined"
-                    className="liqo-primary"
-                    value={insertCommand}
-                    onChange={(e) => setInsertCommand(e.target.value)}
-                  />
-                </Grid>
-                <Grid item xs={6} style={{ paddingBottom: "3rem" }}>
-                  <Button
-                    disabled={insertCommand === ""}
-                    variant="contained"
-                    color="primary"
-                    size="large"
-                    fullWidth
-                    endIcon={<Renderer.Component.Icon material="cable" />}
-                    style={{ fontSize: "12pt", marginBottom: "2rem" }}
-                    onClick={peer}
-                  >
-                    PEER
-                  </Button>
-                </Grid>
-                <Grid item xs={6} style={{ paddingBottom: "3rem" }}>
-                  <Button
-                    disabled={insertCommand === ""}
-                    variant="contained"
-                    color="inherit"
-                    size="large"
-                    fullWidth
-                    style={{ fontSize: "12pt" }}
-                    onClick={clearInsert}
-                  >
-                    CLEAR
-                  </Button>
-                </Grid>
-              </Grid>
-            </CardContent>
-          </Card>
-        </div> */}
       </div>
       <div className="flex gaps align-flex-start">
         <Grid item xs={12}>
@@ -515,7 +355,10 @@ export const PeeringPage: React.FC<{ extension: Renderer.LensExtension }> = (
                 sortBy: fcSortBy.authentication,
               },
               {
-                title: "",
+                title: "Outgoing",
+              },
+              {
+                title: "Incoming",
               },
             ]}
             renderTableContents={(fc: ForeignCluster) => [
@@ -526,11 +369,15 @@ export const PeeringPage: React.FC<{ extension: Renderer.LensExtension }> = (
               getAuthenticationValue(fc),
               <div
                 className={`peering-button ${
-                  !enabledButton(fc) ? "disabled-button" : enabledOutgoing(fc) ? "error" : "success"
+                  !enabledButtonOut(fc)
+                    ? "disabled-button"
+                    : enabledOutgoing(fc)
+                    ? "error"
+                    : "success"
                 }`}
                 style={{
                   fontWeight: "bold",
-                  width: "150px",
+                  width: "100px",
                   textAlign: "center",
                   paddingTop: "0.1rem",
                   paddingBottom: "0.1rem",
@@ -545,9 +392,42 @@ export const PeeringPage: React.FC<{ extension: Renderer.LensExtension }> = (
                   );
                 }}
               >
-                {!enabledButton(fc) ? "loading".toUpperCase() : enabledOutgoing(fc)
-                  ? "Disable Outgoing".toUpperCase()
-                  : "Enable Outgoing".toUpperCase()}
+                {!enabledButtonOut(fc)
+                  ? "loading".toUpperCase()
+                  : enabledOutgoing(fc)
+                  ? "Disable".toUpperCase()
+                  : "Enable".toUpperCase()}
+              </div>,
+              <div
+                className={`peering-button ${
+                  !enabledButtonIn(fc)
+                    ? "disabled-button"
+                    : enabledIncoming(fc)
+                    ? "error"
+                    : "success"
+                }`}
+                style={{
+                  fontWeight: "bold",
+                  width: "100px",
+                  textAlign: "center",
+                  paddingTop: "0.1rem",
+                  paddingBottom: "0.1rem",
+                  borderRadius: "0.5rem",
+                }}
+                onClick={(event) => {
+                  event.stopPropagation();
+                  toggleIncomingPeering(
+                    foreignClusterStore,
+                    fc.spec.clusterIdentity.clusterID,
+                    !enabledIncoming(fc)
+                  );
+                }}
+              >
+                {!enabledButtonIn(fc)
+                  ? "loading".toUpperCase()
+                  : enabledIncoming(fc)
+                  ? "Disable".toUpperCase()
+                  : "Enable".toUpperCase()}
               </div>,
             ]}
           />

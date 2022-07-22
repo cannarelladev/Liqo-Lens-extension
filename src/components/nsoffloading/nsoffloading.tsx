@@ -1,22 +1,9 @@
 import { Renderer } from "@k8slens/extensions";
 import { Namespace } from "@k8slens/extensions/dist/src/common/k8s-api/endpoints";
-import { type } from "os";
+import { Grid, Typography } from "@material-ui/core";
 import path from "path";
 import React, { useState } from "react";
-import {
-  NamespaceOffloading,
-  NamespaceOffloadingStore,
-  nsOffloadingStore,
-} from "../../api/nsoffloading";
-import {
-  Card,
-  CardContent,
-  Grid,
-  TextareaAutosize,
-  TextField,
-  CardHeader,
-  Button,
-} from "@material-ui/core";
+import { NamespaceOffloading, nsOffloadingStore } from "../../api/nsoffloading";
 import { NewNSO } from "./dialog/new_nso";
 
 const { KubeObjectStore } = Renderer.K8sApi;
@@ -28,17 +15,10 @@ const namespaceStore: Renderer.K8sApi.NamespaceStore =
   ) as Renderer.K8sApi.NamespaceStore;
 
 enum offloadingSortBy {
-  name = "name",
   namespace = "namespace",
   offloadingPhase = "offloadingPhase",
+  namespaceMappingStrategy = "namespaceMappingStrategy",
   podOffloadingStartegy = "podOffloadingStrategy",
-}
-
-enum nsSortBy {
-  name = "name",
-  status = "status",
-  created = "created",
-  //podOffloadingStartegy = "podOffloadingStrategy",
 }
 
 export function NSOffloadingIcon(props: Renderer.Component.IconProps) {
@@ -57,123 +37,106 @@ interface customNamespace extends Namespace {
 
 export const NSOffloadingPage: React.FC<{
   extension: Renderer.LensExtension;
-}> = (props) => {
+}> = () => {
   const [showNewNSDialog, setShowNewNSDialog] = useState(false);
-  //console.log("test", namespaceStore.contextNamespaces);
-
-  //namespaceStore.patch()
-
-  const obj = namespaceStore.items.map((ns) => {
-    const nsOff = nsOffloadingStore.getAllByNs(ns.getName());
-    if (nsOff.length > 0) {
-      return Object.assign(ns, {
-        spec: { offloading: nsOff[0] },
-      }) as customNamespace;
-    } else {
-      return Object.assign(ns, {
-        spec: { offloading: null },
-      }) as customNamespace;
-    }
-  });
-
-  const cols = (cn: customNamespace) => {
-    return (
-      <>
-        <TableCell>{cn.getName()}</TableCell>
-        <TableCell>{cn.getStatus()}</TableCell>
-        <TableCell>{cn.getAge(true, true, false)}</TableCell>
-        <TableCell>{cn.spec.offloading?.getName() ?? "None"}</TableCell>
-      </>
-    );
-  };
-
-  const rows = (cn: customNamespace) => {
-    return <TableRow key={cn.getName()}>{cols(cn)}</TableRow>;
-  };
-
-  {
-    /* <TableHead sticky={true}>
-  {this.columns.map(col => <TableCell key={col.title} className={col.className} sortBy={col.id}>{col.title}</TableCell>)}
-</TableHead>); */
-  }
 
   return (
     <>
-      {/* {namespaceStore.items.map((ns) => ns.getName())[0]} */}
-      {/* <Table items={obj} selectable renderRow={rows}>
-        <TableHead>
-          <TableCell key={1}></TableCell>Prova
-        </TableHead>
-      </Table> */}
-      {/* <Renderer.Component.KubeObjectListLayout
-        className="table-ns"
-        store={namespaceStore}
-        sortingCallbacks={{
-          [nsSortBy.name]: (ns: customNamespace) => ns.getName(),
-          [nsSortBy.status]: (ns: customNamespace) => ns.getStatus(),
-          [nsSortBy.created]: (ns: customNamespace) => ns.getAge(),
-        }}
-        searchFilters={[(ns: customNamespace) => ns.getSearchFields()]}
-        renderHeaderTitle="Namespaces"
-        renderTableHeader={[
-          { title: "Name", className: "name", sortBy: nsSortBy.name },
-          { title: "Status", className: "status", sortBy: nsSortBy.status },
-          {
-            title: "Created",
-            className: "created",
-            sortBy: nsSortBy.created,
-          },
-        ]}
-        renderTableContents={(ns: customNamespace) => [
-          ns.getName(),
-          ns.getStatus(),
-          ns.getAge(true, true, false),
-        ]}
-      /> */}
-      <Renderer.Component.KubeObjectListLayout
-        className="table-nsOff"
-        store={nsOffloadingStore}
-        sortingCallbacks={{
-          [offloadingSortBy.namespace]: (nsoffloading: NamespaceOffloading) =>
-            nsoffloading.metadata.namespace,
-          [offloadingSortBy.podOffloadingStartegy]: (
-            nsoffloading: NamespaceOffloading
-          ) => nsoffloading.spec.podOffloadingStrategy,
-          [offloadingSortBy.offloadingPhase]: (
-            nsoffloading: NamespaceOffloading
-          ) => nsoffloading.status?.offloadingPhase ?? "Not Ready",
-        }}
-        searchFilters={[
-          (nsoffloading: NamespaceOffloading) => nsoffloading.getSearchFields(),
-        ]}
-        renderHeaderTitle="Namespace Offloadings"
-        renderTableHeader={[
-          {
-            title: "Namespace",
-            className: "namespace",
-            sortBy: offloadingSortBy.namespace,
-          },
-          {
-            title: "Pod Offloading Strategy",
-            className: "podOffloadingStrategy",
-            sortBy: offloadingSortBy.podOffloadingStartegy,
-          },
-          {
-            title: "Offloading Phase",
-            className: "offloadingPhase",
-            sortBy: offloadingSortBy.offloadingPhase,
-          },
-        ]}
-        renderTableContents={(nsoffloading: NamespaceOffloading) => [
-          nsoffloading.metadata.namespace,
-          nsoffloading.spec.podOffloadingStrategy,
-          nsoffloading.status?.offloadingPhase ?? "Not Ready",
-        ]}
-        addRemoveButtons={{
-          addTooltip: "Add new NamespaceOffloading",
-          onAdd: () => setShowNewNSDialog(true),
-        }}
-      />
+      <div
+        className="flex gaps align-flex-start"
+        style={{ paddingBottom: "2rem" }}
+      >
+        <div className="liqo-toolbar" style={{ width: "100%" }}>
+          <div className="title">
+            <Typography
+              variant="h2"
+              noWrap
+              component="a"
+              href="/"
+              style={{
+                fontWeight: 700,
+                color: "inherit",
+                textDecoration: "none",
+              }}
+            >
+              Namespace Offloadings
+            </Typography>
+          </div>
+          <div className="subtitle">
+            <Typography
+              variant="h5"
+              noWrap
+              component="a"
+              href="/"
+              style={{
+                color: "inherit",
+                textDecoration: "none",
+              }}
+            >
+              Lorem ipsum dolor sit amet, consectetur adipiscing elit.
+            </Typography>
+          </div>
+        </div>
+      </div>
+      <div className="flex gaps align-flex-start">
+        <Grid item xs={12}>
+          <Renderer.Component.KubeObjectListLayout
+            className="table-nsOff"
+            store={nsOffloadingStore}
+            sortingCallbacks={{
+              [offloadingSortBy.namespace]: (
+                nsoffloading: NamespaceOffloading
+              ) => nsoffloading.metadata.namespace,
+              [offloadingSortBy.podOffloadingStartegy]: (
+                nsoffloading: NamespaceOffloading
+              ) => nsoffloading.spec.podOffloadingStrategy,
+              [offloadingSortBy.namespaceMappingStrategy]: (
+                nsoffloading: NamespaceOffloading
+              ) => nsoffloading.spec.namespaceMappingStrategy,
+              [offloadingSortBy.offloadingPhase]: (
+                nsoffloading: NamespaceOffloading
+              ) => nsoffloading.status?.offloadingPhase ?? "Not Ready",
+            }}
+            searchFilters={[
+              (nsoffloading: NamespaceOffloading) =>
+                nsoffloading.getSearchFields(),
+            ]}
+            renderHeaderTitle="Namespace Offloadings"
+            renderTableHeader={[
+              {
+                title: "Namespace",
+                className: "namespace",
+                sortBy: offloadingSortBy.namespace,
+              },
+              {
+                title: "Pod Offloading Strategy",
+                className: "podOffloadingStrategy",
+                sortBy: offloadingSortBy.podOffloadingStartegy,
+              },
+              {
+                title: "Namespace Mapping Strategy",
+                className: "namespaceMappingStrategy",
+                sortBy: offloadingSortBy.namespaceMappingStrategy,
+              },
+              {
+                title: "Offloading Phase",
+                className: "offloadingPhase",
+                sortBy: offloadingSortBy.offloadingPhase,
+              },
+            ]}
+            renderTableContents={(nsoffloading: NamespaceOffloading) => [
+              nsoffloading.metadata.namespace,
+              nsoffloading.spec.podOffloadingStrategy,
+              nsoffloading.spec.namespaceMappingStrategy,
+              nsoffloading.status?.offloadingPhase ?? "Not Ready",
+            ]}
+            addRemoveButtons={{
+              addTooltip: "Add new NamespaceOffloading",
+              onAdd: () => setShowNewNSDialog(true),
+            }}
+          />
+        </Grid>
+      </div>
       <NewNSO isOpen={showNewNSDialog} setIsOpen={setShowNewNSDialog} />
     </>
   );

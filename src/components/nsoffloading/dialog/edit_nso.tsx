@@ -26,8 +26,13 @@ import {
   nsOffloadingStore,
 } from "../../../api/nsoffloading";
 
-const { Component } = Renderer;
-const { MenuItem, Dialog, Wizard, WizardStep, Icon } = Component;
+const { Component, K8sApi } = Renderer;
+const { MenuItem, Input, Dialog, Wizard, WizardStep, Icon } = Component;
+const { apiManager } = K8sApi;
+
+/* const nodeStore: Renderer.K8sApi.NodesApi = Renderer.K8sApi.apiManager.getStore(
+  Renderer.K8sApi.nodesApi
+) as unknown as Renderer.K8sApi.NodesApi; */
 
 type NewNSOProps = {
   isOpen: boolean;
@@ -56,17 +61,20 @@ type clusterSelector = {
 };
 
 export const NewNSO: FC<NewNSOProps> = (props) => {
-  const { isOpen, setIsOpen } = props;
+  const { isOpen, setIsOpen, onSuccess, onError } = props;
   const [namespace, setNamespace] = useState<string>("");
   const [namespaceMappingStrategy, setNamespaceMappingStrategy] =
     useState<nsStrategy>("DefaultName");
   const [podOffloadingStrategy, setPodOffloadingStrategy] =
     useState<podStrategy>("LocalAndRemote");
+  /* const [clusterSelector, setClusterSelector] = useState<clusterSelector>({
+    nodeSelectorTerms: [],
+  }); */
   const [checkLocal, setCheckLocal] = useState<boolean>(true);
   const [checkRemote, setCheckRemote] = useState<boolean>(true);
   const [radioNamespace, setRadioNamespace] = useState<nsSelection>("select");
   const [newNamespace, setNewNamespace] = useState<string>("");
-  const [nodeSelector, setNodeSelector] = useState<string[]>();
+  const [nodeSelector, setNodeSelector] = useState<string[]>([]);
   const [allNodes, setAllNodes] = useState<string[]>([]);
   const [allNamespaces, setAllNamespaces] = useState<string[]>([]);
 
@@ -135,8 +143,8 @@ export const NewNSO: FC<NewNSOProps> = (props) => {
   );
 
   const nsStrategyOptions = [
-    { value: "DefaultName", desc: "Generate unique Name (DefaultName)" },
-    { value: "EnforceSameName", desc: "Use original Name (EnforceSameName)" },
+    { value: "DefaultName", desc: "text (DefaultName)" },
+    { value: "EnforceSameName", desc: "text (EnforceSameName)" },
   ];
   const header = <h5>Create Namespace Offloading</h5>;
   const namespaces = (
@@ -181,17 +189,17 @@ export const NewNSO: FC<NewNSOProps> = (props) => {
   useEffect(() => {
     refreshStore();
     console.log("Refreshed store");
-    const nodesArray = nodesStore
-      .getItems()
-      .filter((n) => n.getLabels().includes("liqo.io/type=virtual-node"))
-      .map((n) => n.getName());
-    setAllNodes(nodesArray);
-    setNodeSelector(nodesArray);
+    setAllNodes(
+      nodesStore
+        .getItems()
+        .filter((n) => n.getLabels().includes("liqo.io/type=virtual-node"))
+        .map((n) => n.getName())
+    );
   }, [isOpen]);
 
   return (
     <Dialog
-      className="liqo-nso-dialog"
+      className="AddTenantDialog"
       isOpen={isOpen}
       onOpen={() => refreshStore()}
       close={handleClose}
@@ -267,6 +275,20 @@ export const NewNSO: FC<NewNSOProps> = (props) => {
                   placeholder="Type a namespace name..."
                   inputProps={{ "aria-label": "Type a namespace name..." }}
                 />
+                {/* <Button
+                  disabled={!newNamespace}
+                  size="large"
+                  color="primary"
+                  variant="contained"
+                  endIcon={<Icon material="add_circle" />}
+                  style={{ fontSize: "11pt", marginLeft: "0.5rem" }}
+                  onClick={createNs}
+                >
+                  Create
+                </Button> */}
+                {/* <IconButton>
+                  <Icon material="add_circle" />
+                </IconButton> */}
               </div>
             )}
           </FormControl>
@@ -277,9 +299,7 @@ export const NewNSO: FC<NewNSOProps> = (props) => {
               focused
             >
               <b>Namespace Mapping Strategy</b>
-              <p className="liqo-description">
-                Select name strategy for the offloaded Namespace
-              </p>
+              <p className="liqo-description">Description</p>
             </FormLabel>
             <div className="liqo-nsmapping-group">
               <Select
@@ -312,9 +332,7 @@ export const NewNSO: FC<NewNSOProps> = (props) => {
                   {"\t*At least one required"}
                 </span>
               </b>
-              <p className="liqo-description">
-                Select offloading strategy for Pods
-              </p>
+              <p className="liqo-description">Description</p>
             </FormLabel>
             <FormGroup
               aria-label="position"
@@ -354,6 +372,19 @@ export const NewNSO: FC<NewNSOProps> = (props) => {
               />
             </FormGroup>
           </FormControl>
+          {/* <Select
+            //isCreatable
+
+            id="pod-offloading-strategy"
+            value={podOffloadingStrategy}
+            onChange={({ target }) =>
+              setPodOffloadingStrategy(target.value as podStrategy)
+            }
+          >
+            {podStrategyOptions.map((n) => (
+              <MenuItem value={n}>{n}</MenuItem>
+            ))}
+          </Select> */}
           <FormControl>
             <FormLabel
               color="primary"
@@ -361,9 +392,10 @@ export const NewNSO: FC<NewNSOProps> = (props) => {
               focused
             >
               <b>Cluster selector</b>
-              <p className="liqo-description">
-                Select in which remote cluster offload Pods
-              </p>
+              {/* <IconButton onClick={() => refreshNodes()}>
+                <Renderer.Component.Icon material="sync" />
+              </IconButton> */}
+              <p className="liqo-description">Description</p>
             </FormLabel>
             <FormGroup
               aria-label="position"

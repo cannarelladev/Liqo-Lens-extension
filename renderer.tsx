@@ -1,29 +1,17 @@
 import { Renderer } from "@k8slens/extensions";
-import { ExampleIcon, ExamplePage } from "./src/example-page";
 import {
-  DashboardPage,
   DashboardIcon,
-  ManagerPage,
-  ManagerIcon,
   NSOffloadingPage,
   NSOffloadingIcon,
   PeeringPage,
   PeeringIcon,
 } from "./src/components";
-import { ExamplePodDetails } from "./src/example-pod-details";
 import React from "react";
 import { AppPreferenceRegistration } from "@k8slens/extensions/dist/src/extensions/common-api/registrations";
-import { nsStore } from "./src/api/namespace/namespace_store";
 
 export default class LiqoExtension extends Renderer.LensExtension {
 
   clusterPages = [
-    {
-      id: "manager",
-      components: {
-        Page: () => <ManagerPage extension={this} />,
-      },
-    },
     {
       id: "offloading",
       components: {
